@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  email: MyString
+  password_digest: MyString
+  role: 1
+  otp: MyString
+  otp_sent_at: 2026-02-10 10:32:46
+
+two:
+  email: MyString
+  password_digest: MyString
+  role: 1
+  otp: MyString
+  otp_sent_at: 2026-02-10 10:32:46
