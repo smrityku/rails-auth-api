@@ -3,4 +3,6 @@ Rails.application.routes.draw do
   post "/login", to: "auth#login"
   get "/profile", to: "protected#profile"
   get "/admin/dashboard", to: "admin#dashboard"
+  post "/send_otp", to: "auth#send_otp"
+  post "/verify_otp", to: "auth#verify_otp"
 end
