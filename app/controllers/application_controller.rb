@@ -12,7 +12,16 @@ class ApplicationController < ActionController::API
     decoded = JsonWebToken.decode(token)
     @current_user = User.find(decoded[:user_id]) if decoded
 
+    render_unauthorized unless @current_user
   rescue ActiveRecord::RecordNotFound
+    render_unauthorized
+  end
+
+  def authorize_admin!
+    render json: { error: "Forbidden. Admin access only." }, status: :forbidden unless current_user.admin?
+  end
+
+  def render_unauthorized
     render json: { error: "Unauthorized" }, status: :unauthorized
   end
 end
