@@ -14,12 +14,47 @@ class AuthController < ApplicationController
       return render json: { error: "Account not verified" }, status: :unauthorized
     end
 
-    if user&.authenticate(params[:password])
-      token = JsonWebToken.encode(user_id: user.id, role: user.role)
-      render json: { token: token }, status: :ok
-    else
-      render json: { error: "Invalid email or password" }, status: :unauthorized
-    end
+    return render json: { error: "Invalid credentials" }, status: :unauthorized unless user&.authenticate(params[:password])
+
+    access_token = JsonWebToken.encode(
+      { user_id: user.id },
+      15.minutes.from_now
+    )
+
+    refresh_token = SecureRandom.hex(32)
+
+    user.update!(
+      refresh_token: refresh_token,
+      refresh_token_expires_at: 7.days.from_now
+    )
+
+    render json: {
+      access_token: access_token,
+      refresh_token: refresh_token
+    }
+  end
+
+  def refresh
+    user = User.find_by(refresh_token: params[:refresh_token])
+
+    return render json: { error: "Invalid refresh token" }, status: :unauthorized unless user
+    return render json: { error: "Refresh token expired" }, status: :unauthorized if user.refresh_token_expires_at < Time.current
+
+    access_token = JsonWebToken.encode(
+      { user_id: user.id },
+      15.minutes.from_now
+    )
+
+    render json: { access_token: access_token }
+  end
+
+  def logout
+    current_user.update!(
+      refresh_token: nil,
+      refresh_token_expires_at: nil
+    )
+
+    render json: { message: "Logged out successfully" }
   end
 
   def send_otp

@@ -5,4 +5,6 @@ Rails.application.routes.draw do
   get "/admin/dashboard", to: "admin#dashboard"
   post "/send_otp", to: "auth#send_otp"
   post "/verify_otp", to: "auth#verify_otp"
+  post "/refresh", to: "auth#refresh"
+  post "/logout", to: "auth#logout"
 end
